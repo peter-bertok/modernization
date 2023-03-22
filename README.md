@@ -107,5 +107,23 @@ integrations with services such as Azure AD B2C.
 - [ ] Find NuGet packages for DLL binary files and replace the DLL file with the package reference.
   - WARNING: There are no official packages for Crystal Reports!
 - [ ] Internally-developed DLLs from other projects should be published as NuGet packages to a private feed hosted in Azure DevOps.
- 
+- [ ] Web apps should be [precompiled during builds](https://learn.microsoft.com/en-us/aspnet/web-forms/overview/older-versions-getting-started/deploying-web-site-projects/precompiling-your-website-cs), otherwise some web pages might not actually function on PaaS, but this won't be noticed until production when they're "compiled on the fly".
+- [ ] Add the "Source Indexing" task to the pipeline, which then enables Application Insights debug snapshots to automatically download the matching code files.
+- [ ] Publish PDB files even in release builds to the PaaS platform. Check the "zip" artefact files to make sure they're there. These are used by Application Insights for some diagostics.
 
+In Azure DevOps Pipelines, this means adding the following snippets to the msbuild args:
+
+```batch
+    /p:DebugType=Full /p:PrecompileBeforePublish=true /p:EnableUpdateable=false /p:DebugSymbols=true
+```
+
+Also add the following task immediately after the build step to enable source indexing:
+
+```YAML
+    - task: PublishSymbols@2
+      inputs:
+        SymbolsFolder: '$(Build.ArtifactStagingDirectory)'
+        SearchPattern: '**/bin/**/*.pdb'
+        SymbolServerType: 'TeamServices'
+        TreatNotIndexedAsWarning: true
+```
