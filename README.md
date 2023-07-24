@@ -78,6 +78,9 @@ is that it should be possible for a developer to delete the contents of a virtua
 then simply copy in the content from a *different environment* and then that's... it. No further steps
 should be required. 
 
+- [ ] Move all environment-specific configuration settings in the "<AppSettings>" or "<ConnectionStrings>" sections. Notably, WCF "<ApplicationSettings>" are not easy to configure!
+- [ ] If any files such as JavaScript varies per-environment, generate them dynamically in ASPX if possible.
+- [ ] Avoid hard-coded redirects in web.config. These are served by IIS, not ASP.NET, and cannot be configured via AppSettings.
 
 ## DevOps 101
 Many older applications are built manually using Visual Studio, depend on components
@@ -87,12 +90,13 @@ While some PaaS platforms do support manual or semi-manual workflows, they're de
 for modern "dev-ops" workflows such as CI/CD, cloud-hosted automated builds, tests, and
 deployments. 
 
-Fixing this is not 100% required, but is *highly recommended* because old apps
+Fixing this is not 100% required, but it is *highly recommended* because old apps
 that may have remained unmodified for years will often be updated several times
 immediately after a migration. For example, updating logos, styling, content, or 
-integrations with services such as Azure AD B2C.
+integrations with services such as Azure AD B2C. Making the deployment process smooth
+reduces the cost of these changes
 
-- [ ] Ensure all files required for builds and deployments are in a source control management system (SCM).
+- [ ] Ensure all files required for builds and deployments are in the source control management system (SCM).
 - [ ] Ideally, use Azure DevOps or GitHub when deploying to Azure.
 - [ ] Migrate to Git SCM if not already using it. Many older projects use Team Foundation Version Control (TFVC), which modern tools such as NBGV don't support.
 - [ ] Builds must be successful on a "blank", isolated machine with only Visual Studio 2022 on it. (I.e.: an Azure DevOps pipeline agent.)
