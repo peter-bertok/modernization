@@ -78,7 +78,7 @@ is that it should be possible for a developer to delete the contents of a virtua
 then simply copy in the content from a *different environment* and then that's... it. No further steps
 should be required. 
 
-- [ ] Move all environment-specific configuration settings in the "<AppSettings>" or "<ConnectionStrings>" sections. Notably, WCF "<ApplicationSettings>" are not easy to configure!
+- [ ] Move all environment-specific configuration settings in the `<AppSettings>` or `<ConnectionStrings>` sections. Notably, the `<ApplicationSettings>` setting used by WCF is not easy to configure!
 - [ ] If any files such as JavaScript varies per-environment, generate them dynamically in ASPX if possible.
 - [ ] Avoid hard-coded redirects in web.config. These are served by IIS, not ASP.NET, and cannot be configured via AppSettings.
 
