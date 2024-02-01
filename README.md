@@ -1,5 +1,4 @@
 # Checklist for Light-Touch App Modernization
-
 The following is relevant to a typical legacy ASP.NET web application being 
 migrated to the public cloud. It's most applicable when moving to a true 
 Platform-as-a-Service (PaaS) offering such as Azure App Service, but is equally
@@ -78,23 +77,25 @@ is that it should be possible for a developer to delete the contents of a virtua
 then simply copy in the content from a *different environment* and then that's... it. No further steps
 should be required. 
 
-- [ ] Move all environment-specific configuration settings in the `<AppSettings>` or `<ConnectionStrings>` sections. Notably, the `<ApplicationSettings>` setting used by WCF is not easy to configure!
+- [ ] Move all environment-specific configuration settings into the `<AppSettings>` or `<ConnectionStrings>` sections, which IIS, App Service, and Docker can control from "the outside". Notably, the `<ApplicationSettings>` setting used by WCF is not easy to configure!
 - [ ] If any files such as JavaScript varies per-environment, generate them dynamically in ASPX if possible.
 - [ ] Avoid hard-coded redirects in web.config. These are served by IIS, not ASP.NET, and cannot be configured via AppSettings.
+- [ ] For ASP.NET Core apps, use the [ASPNETCORE_ENVIRONMENT](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/environments?view=aspnetcore-8.0#environments) flag to switch configs dynamically.
+- [ ] Consider using Azure App Configuration, or a similar "external" configuration source.
 
 ## DevOps 101
 Many older applications are built manually using Visual Studio, depend on components
-installed "system-wide", and require manual steps to package, deploy, and configure.
+installed "system-wide", or require manual steps to package, deploy, and configure.
 
 While some PaaS platforms do support manual or semi-manual workflows, they're designed
-for modern "dev-ops" workflows such as CI/CD, cloud-hosted automated builds, tests, and
-deployments. 
+for modern "dev-ops" workflows such as CI/CD, cloud-hosted automated builds, automated
+integration tests, automated deployments, and active health monitor probes in production.
 
 Fixing this is not 100% required, but it is *highly recommended* because old apps
 that may have remained unmodified for years will often be updated several times
 immediately after a migration. For example, updating logos, styling, content, or 
 integrations with services such as Azure AD B2C. Making the deployment process smooth
-reduces the cost of these changes
+reduces the cost of these changes.
 
 - [ ] Ensure all files required for builds and deployments are in the source control management system (SCM).
 - [ ] Ideally, use Azure DevOps or GitHub when deploying to Azure.
@@ -105,15 +106,17 @@ reduces the cost of these changes
 - [ ] Create build pipelines. Make sure to use the new "2.0" pipelines.
   - [ ] If you can't see a YAML file in the source code, you went wrong somewhere.
   - [ ] If you use seperate "build" and "release" pipelines, this is the old 1.0 style GUI-wizard pipelines.
-  - [ ] Use "Environments" with security rules associated with the PRD environment.
   - [ ] Use "pipeline artefacts" for zip files.
   - [ ] Use seperate "stages" for build and each deployment. E.g.: Build -> TST -> UAT -> PRD.
+  - [ ] Use "Environments" with security rules associated with the PRD environment to block accidental deployments to the live environment.
+  - [ ] Use branch security and similar controls to ensure that only the "main" or "master" branch deploys to PRD.
 - [ ] Find NuGet packages for DLL binary files and replace the DLL file with the package reference.
+  - [ ] "Vendor" the dependency into Azure DevOps. This is a checkbox feature called "Package Cache".
   - WARNING: There are no official packages for Crystal Reports!
 - [ ] Internally-developed DLLs from other projects should be published as NuGet packages to a private feed hosted in Azure DevOps.
 - [ ] Web apps should be [precompiled during builds](https://learn.microsoft.com/en-us/aspnet/web-forms/overview/older-versions-getting-started/deploying-web-site-projects/precompiling-your-website-cs), otherwise some web pages might not actually function on PaaS, but this won't be noticed until production when they're "compiled on the fly".
 - [ ] Add the "Source Indexing" task to the pipeline, which then enables Application Insights debug snapshots to automatically download the matching code files.
-- [ ] Publish PDB files even in release builds to the PaaS platform. Check the "zip" artefact files to make sure they're there. These are used by Application Insights for some diagostics.
+- [ ] Publish PDB files even in release builds to the PaaS platform. Check the "zip" artefact files to make sure they're there. These are used by both App Service and Application Insights for diagostics such as crash dump analysis and memory leak analysis.
 
 In Azure DevOps Pipelines, this means adding the following snippets to the msbuild args:
 
