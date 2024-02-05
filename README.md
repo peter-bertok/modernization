@@ -145,8 +145,8 @@ The following changes are technically optional, but very highly recommended beca
 - [ ] Where possible, configure service clients to use Azure managed identities for authentication. This eliminates the use of passwords or the requirement for key rotation. This will likely require the use of an updated client library, such as the latest [Microsoft.Data.SqlClient](https://learn.microsoft.com/en-us/sql/connect/ado-net/introduction-microsoft-data-sqlclient-namespace).
 - [ ] Alternatively, move secrets into Azure Key Vault or DevOps "secret" parameters. For local development, use "User Secrets" files. There is a right-click wizard for this setup in Visual Studio.
 - [ ] Avoid catching and ignoring exceptions. E.g.: empty ```catch {}``` blocks are generally a problem and should be removed in almost all cases.
-      - Not allowing exceptions to bubble up to the ASP.NET request pipeline will *falsely* report HTTP 200/OK to upstream systems such as App Service, Application Insights, and reverse proxies such as Azure Front Door.
-      - Error counts, alerts, crash dumps, and other diagnostics from Application Insights will be missing and non-functional.
-      - Client are then likely to inadvertently cache failure error messages, leading to persistent errors that can only be resolved by customers "clearing their browser cache".
-      - Applications that report HTTP 200/OK for errors are generally incompatible with CDNs or any kind of caching. Developers are forced to disable all caching, harming performance.
+  - Not allowing exceptions to bubble up to the ASP.NET request pipeline will *falsely* report HTTP 200/OK to upstream systems such as App Service, Application Insights, and reverse proxies such as Azure Front Door.
+  - Error counts, alerts, crash dumps, and other diagnostics from Application Insights will be missing and non-functional.
+  - Client are then likely to inadvertently cache failure error messages, leading to persistent errors that can only be resolved by customers "clearing their browser cache".
+  - Applications that report HTTP 200/OK for errors are generally incompatible with CDNs or any kind of caching. Developers are forced to disable all caching, harming performance.
 - [ ] Ensure that all key parameters are configurable from the "outside world", e.g. via environment varibles or App Service configuration settings. The latter is required for [using deployment slots](https://learn.microsoft.com/en-us/azure/app-service/deploy-staging-slots).
