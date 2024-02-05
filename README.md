@@ -140,9 +140,9 @@ The following changes are technically optional, but very highly recommended beca
 
 - [ ] Add a "health monitor" endpoint such as "/healthz". This is used by App Service and other load balancers to identify healthy instances.
   - [ ] For ASP.NET Core apps [there is a standard methodology](https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-8.0).
-  - [ ] For .NET Framework 4.8 apps a good approach is to add a new [IHttpHandler] bound to the same path.
+  - [ ] For .NET Framework 4.x apps a good approach is to add a new [IHttpHandler](https://learn.microsoft.com/en-us/dotnet/api/system.web.ihttphandler?view=netframework-4.8.1) bound to the same path.
   - [ ] Ideally, filter this path such that it only responds on the "local network" and does not respond to requests from the Internet.
-- [ ] Where possible, change connection strings service client code to using Azure managed identities. This eliminate the use of passwords or the requirement for key rotation.
+- [ ] Where possible, configure service clients to use Azure managed identities for authentication. This eliminates the use of passwords or the requirement for key rotation. This will likely require the use of an updated client library, such as the latest [Microsoft.Data.SqlClient](https://learn.microsoft.com/en-us/sql/connect/ado-net/introduction-microsoft-data-sqlclient-namespace).
 - [ ] Alternatively, move secrets into Azure Key Vault or DevOps "secret" parameters. For local development, use "User Secrets" files. There is a right-click wizard for this setup in Visual Studio.
 - [ ] Avoid catching and ignoring exceptions. E.g.: empty ```catch {}``` blocks are generally a problem and should be removed in almost all cases.
       - Not allowing exceptions to bubble up to the ASP.NET request pipeline will *falsely* report HTTP 200/OK to upstream systems such as App Service, Application Insights, and reverse proxies such as Azure Front Door.
