@@ -24,7 +24,7 @@ issues such as excessive memory usage in older versions.
 - [ ] Optionally update JQuery (where possible)
   - [ ] Older versions used are designed for IE6, have various issues in modern browsers.
   - [ ] This is best implemented after the site is *testable*, use F12 tools to validate!
-- [ ] If needed, disable "Unobtrustive JavaScript" control validation.
+- [ ] If needed, disable "Unobtrusive JavaScript" control validation.
 - [ ] Disable any hard-coded uses of corporate HTTP web proxies.
 - [ ] Fix ASP.NET cookie security flags: secure, HTTP-only, correct DNS domain.
   - [ ] In the global web.config settings
@@ -33,7 +33,7 @@ issues such as excessive memory usage in older versions.
 - [ ] Update all URL references to use HTTPS where possible
   - [ ] Headers, footers, redirect targets, WCF/ASMX references, JavaScript CDN URLs, etc...
   - [ ] Ideally site-relative, e.g.: ("~/foo/script.js")
-- [ ] Remove any hard-coded system paths (D:\logs", "C:\temp", etc...)
+- [ ] Remove any hard-coded system paths ("D:\logs", "C:\temp", etc...)
   - [ ] Replace with app-relative paths and/or GetTempDirectory() and the like         
 - [ ] Remove stale/unused config settings.
 - [ ] Update/remove any references to external EXEs launched by the web apps  
@@ -105,9 +105,9 @@ reduces the cost of these changes.
 - [ ] The "web.config" in the source code should match the one in production (in structure, but not specific settings).
 - [ ] Create build pipelines. Make sure to use the new "2.0" pipelines.
   - [ ] If you can't see a YAML file in the source code, you went wrong somewhere.
-  - [ ] If you use seperate "build" and "release" pipelines, this is the old 1.0 style GUI-wizard pipelines.
-  - [ ] Use "pipeline artefacts" for zip files.
-  - [ ] Use seperate "stages" for build and each deployment. E.g.: Build -> TST -> UAT -> PRD.
+  - [ ] If you use separate "build" and "release" pipelines, this is the old 1.0 style GUI-wizard pipelines.
+  - [ ] Use "pipeline artifacts" for zip files.
+  - [ ] Use separate "stages" for build and each deployment. E.g.: Build -> TST -> UAT -> PRD.
   - [ ] Use "Environments" with security rules associated with the PRD environment to block accidental deployments to the live environment.
   - [ ] Use branch security and similar controls to ensure that only the "main" or "master" branch deploys to PRD.
 - [ ] Find NuGet packages for DLL binary files and replace the DLL file with the package reference.
@@ -134,3 +134,19 @@ Also add the following task immediately after the build step to enable source in
         SymbolServerType: 'TeamServices'
         TreatNotIndexedAsWarning: true
 ```
+
+## Cloud Integrations
+The following changes are technically optional, but very highly recommended because they improve both migrations and ongoing operations.
+
+- [ ] Add a "health monitor" endpoint such as "/healthz". This is used by App Service and other load balancers to identify healthy instances.
+  - [ ] For ASP.NET Core apps [there is a standard methodology](https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-8.0).
+  - [ ] For .NET Framework 4.8 apps a good approach is to add a new [IHttpHandler] bound to the same path.
+  - [ ] Ideally, filter this path such that it only responds on the "local network" and does not respond to requests from the Internet.
+- [ ] Where possible, change connection strings service client code to using Azure managed identities. This eliminate the use of passwords or the requirement for key rotation.
+- [ ] Alternatively, move secrets into Azure Key Vault or DevOps "secret" parameters. For local development, use "User Secrets" files. There is a right-click wizard for this setup in Visual Studio.
+- [ ] Avoid catching and ignoring exceptions. E.g.: empty ```catch {}``` blocks are generally a problem and should be removed in almost all cases.
+      - Not allowing exceptions to bubble up to the ASP.NET request pipeline will *falsely* report HTTP 200/OK to upstream systems such as App Service, Application Insights, and reverse proxies such as Azure Front Door.
+      - Error counts, alerts, crash dumps, and other diagnostics from Application Insights will be missing and non-functional.
+      - Client are then likely to inadvertently cache failure error messages, leading to persistent errors that can only be resolved by customers "clearing their browser cache".
+      - Applications that report HTTP 200/OK for errors are generally incompatible with CDNs or any kind of caching. Developers are forced to disable all caching, harming performance.
+- [ ] Ensure that all key parameters are configurable from the "outside world", e.g. via environment varibles or App Service configuration settings. The latter is required for [using deployment slots](https://learn.microsoft.com/en-us/azure/app-service/deploy-staging-slots).
