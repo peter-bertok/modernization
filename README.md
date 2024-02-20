@@ -33,6 +33,7 @@ issues such as excessive memory usage in older versions.
 - [ ] Update all URL references to use HTTPS where possible
   - [ ] Headers, footers, redirect targets, WCF/ASMX references, JavaScript CDN URLs, etc...
   - [ ] Ideally site-relative, e.g.: ("~/foo/script.js")
+- [ ] Using HTTPS for IIS Express requires port ranges to be changed to 44300..44399 to enable debugging without launching Visual Studio with "Run As Administrator"
 - [ ] Remove any hard-coded system paths ("D:\logs", "C:\temp", etc...)
   - [ ] Replace with app-relative paths and/or GetTempDirectory() and the like         
 - [ ] Remove stale/unused config settings.
