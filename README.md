@@ -140,6 +140,20 @@ Also add the following task immediately after the build step to enable source in
         TreatNotIndexedAsWarning: true
 ```
 
+## Recommended Tools
+For most ASP.NET migrations to an Azure PaaS platform, the following local tools should be installed first:
+
+- [Visual Studio 2026](https://visualstudio.microsoft.com/downloads/)
+- [Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/) or [Podman](https://podman.io/docs/installation)
+- [WSL2](https://learn.microsoft.com/windows/wsl/install)
+- [PowerShell 7.6](https://learn.microsoft.com/powershell/scripting/install/install-powershell-on-windows?view=powershell-7.6) + [Az module](https://learn.microsoft.com/powershell/azure/install-azure-powershell)
+- [Visual Studio Code](https://code.visualstudio.com/download)
+- [Azure Storage Explorer](https://azure.microsoft.com/products/storage/storage-explorer/)
+- [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
+- [Windows Terminal](https://learn.microsoft.com/windows/terminal/install)
+- [Ripgrep](https://github.com/BurntSushi/ripgrep)
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) + [install Python globally with uv](https://docs.astral.sh/uv/guides/install-python/)
+
 ## Cloud Integrations
 The following changes are technically optional, but very highly recommended because they improve both migrations and ongoing operations.
 
